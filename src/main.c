@@ -17,7 +17,7 @@ static bool regex(const char* str, const char* pat) {
     static regex_t r;
 
     /* Compile regex pattern ignoring case */
-    if (regcomp(&r, pat, REG_ICASE)) {
+    if (regcomp(&r, pat, REG_EXTENDED | REG_ICASE)) {
         fprintf(stderr,
                 "plumber: regex: regcomp returned an error code for pattern "
                 "\"%s\"\n",
@@ -51,11 +51,11 @@ int main(int argc, char** argv) {
     }
 
     /* "http?://?.?" */
-    if (regex(argv[1], "^http.*:\\/\\/.\\+\\..\\+"))
+    if (regex(argv[1], "^http.*:\\/\\/.+\\..+"))
         return LAUNCH(CMD_BROWSER, argv[1]);
 
     /* "*.pdf" */
-    if (regex(argv[1], "^.\\+\\.pdf$"))
+    if (regex(argv[1], "^.+\\.pdf$"))
         return LAUNCH(CMD_PDF, argv[1]);
 
 #ifdef DEBUG
