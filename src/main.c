@@ -5,14 +5,18 @@
 #include <unistd.h>
 #include <regex.h>
 
-#include "settings.h" /* Only include once here */
+#include "settings.h"
 
+/* Used for the output of "--help" */
 #define HELP_LINE(STR, DESC, ...) \
     fprintf(stderr, "    %s " STR "\t- " DESC "\n", argv[0], __VA_ARGS__)
 
+/* Returns true if string `str` mathes regex pattern `pat`. Pattern uses BRE
+ * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
 static bool regex(const char* str, const char* pat) {
     static regex_t r;
 
+    /* Compile regex pattern ignoring case */
     if (regcomp(&r, pat, REG_ICASE)) {
         fprintf(stderr,
                 "plumber: regex: regcomp returned an error code for pattern "
@@ -46,15 +50,19 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    /* FIXME: ".pdf" and "https://." is recogniced, ".+" doesn't work */
-
     /* "http?://?.?" */
-    if (regex(argv[1], "^http.*:\\/\\/.*\\..*"))
+    if (regex(argv[1], "^http.*:\\/\\/.\\+\\..\\+"))
         return LAUNCH(CMD_BROWSER, argv[1]);
 
     /* "*.pdf" */
-    if (regex(argv[1], "^.*\\.pdf$"))
+    if (regex(argv[1], "^.\\+\\.pdf$"))
         return LAUNCH(CMD_PDF, argv[1]);
+
+#ifdef DEBUG
+    fprintf(stderr, "Invalid pattern passed to plumber:\n");
+    for (int i = 1; i < argc; i++)
+        fprintf(stderr, "[%d]: %s\n", i, argv[i]);
+#endif
 
     return 0;
 }
