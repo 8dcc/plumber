@@ -1,32 +1,35 @@
-#+title: Title
+#+title: Plumber
 #+options: toc:nil
 #+startup: showeverything
 #+author: 8dcc
 
-#+begin_comment
-*TODO*: Change project-name and title
-*TODO*: Change output.out in Makefile
-#+end_comment
-
-*Short description.*
+*Pass messages between applications. Designed to use with [[https://github.com/8dcc/linux-dotfiles][my build of ST]].*
 
 #+TOC: headlines 2
 
 * Description
-Long description.
+This program is inspired by the [[https://st.suckless.org/patches/right_click_to_plumb/][right click to plumb]] patch for the
+[[https://st.suckless.org/][Simple Terminal]].
+
+I started using the patch with [[https://surf.suckless.org/][surf]] (lighweight suckless browser) as my plumb
+command, but after looking at the [[https://9p.io/wiki/plan9/using_plumbing/index.html][Plan9 plumbing page]], I decided to make my own
+personal version.
 
 * Building
 
 #+begin_src console
-$ git clone https://github.com/8dcc/project-name
-$ cd project-name
+$ git clone https://github.com/8dcc/plumber
+$ cd plumber
 $ make
+...
+
+$ sudo make install
 ...
 #+end_src
 
 * Usage
 
 #+begin_src console
-$ ./project-name.out --help
+$ plumber --help
 ...
 #+end_src
