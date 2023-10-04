@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     /* Iterate file extensions that should be opened with a text editor */
     for (int i = 0; i < LENGTH(editor_patterns); i++)
         if (regex(argv[1], editor_patterns[i]))
-            return LAUNCH(CMD_EDITOR, argv[1]);
+            return LAUNCH(CMD_EDITOR, CMD_EDITOR_ARGS, argv[1]);
 
 #ifdef DEBUG
     fprintf(stderr, "plumber: Invalid pattern:\n");

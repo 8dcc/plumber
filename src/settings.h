@@ -1,10 +1,11 @@
 
 /* Commands used for plumbing depending on the text type */
-#define CMD_BROWSER "firefox"
-#define CMD_PDF     "firefox"
-#define CMD_EDITOR  "emacsclient"
-#define CMD_IMAGE   "feh"
-#define CMD_VIDEO   "mpv"
+#define CMD_BROWSER     "firefox"
+#define CMD_PDF         "firefox"
+#define CMD_EDITOR      "emacsclient"
+#define CMD_EDITOR_ARGS "-n"
+#define CMD_IMAGE       "feh"
+#define CMD_VIDEO       "mpv"
 
 #define REGEX_EXTENSION(STR) "^.+\\." STR "$"
 
