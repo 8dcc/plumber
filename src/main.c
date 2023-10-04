@@ -56,14 +56,19 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    /* NOTE: From here, test the regex of the arguments and launch the asociated
-     * program. The ones checked first obviously have more priority, so they
-     * should be the most specific ones. */
-
     /* TODO:
      *  - man(1) pages
      *  - compiler errors
      *  - jump to line and col when launching editor (file.txt:5) */
+
+    /* FIXME: In ST, the commands are launched from the CALLER of ST (dwm,
+     * another term, etc.), so the changes are not reflected in the current ST.
+     * This is an issue with the ST patch, and probably can't be fixed.
+     * This is needed for commands like "vim" or "man" */
+
+    /* NOTE: From here, test the regex of the arguments and launch the asociated
+     * program. The ones checked first obviously have more priority, so they
+     * should be the most specific ones. */
 
     /* "http?://?.?" */
     if (regex(argv[1], "^http.*:\\/\\/.+\\..+"))
@@ -73,9 +78,15 @@ int main(int argc, char** argv) {
     if (regex(argv[1], "^.+\\.pdf$"))
         return LAUNCH(CMD_PDF, argv[1]);
 
-    /* FIXME: In ST, the commands are launched from the CALLER of ST (dwm,
-     * another term, etc.), so the changes are not reflected in the current ST.
-     * This is an issue with the ST patch */
+    /* Iterate file extensions that should be opened with an image viewer */
+    for (int i = 0; i < LENGTH(image_patterns); i++)
+        if (regex(argv[1], image_patterns[i]))
+            return LAUNCH(CMD_IMAGE, argv[1]);
+
+    /* Iterate file extensions that should be opened with an video player */
+    for (int i = 0; i < LENGTH(video_patterns); i++)
+        if (regex(argv[1], video_patterns[i]))
+            return LAUNCH(CMD_VIDEO, argv[1]);
 
     /* Iterate file extensions that should be opened with a text editor */
     for (int i = 0; i < LENGTH(editor_patterns); i++)
