@@ -13,6 +13,9 @@
 /* Used to execute commands */
 #define LAUNCH(CMD, ...) execlp(CMD, CMD, __VA_ARGS__, NULL)
 
+/* Execute command from new st(1) instance */
+#define ST_LAUNCH(...) execlp("st", "st", "-e", __VA_ARGS__, NULL)
+
 /* Used for the output of "--help" */
 #define HELP_LINE(STR, DESC, ...) \
     fprintf(stderr, "    %s " STR "\t- " DESC "\n", argv[0], __VA_ARGS__)
@@ -56,26 +59,33 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    /* TODO:
-     *  - man(1) pages
-     *  - compiler errors
-     *  - jump to line and col when launching editor (file.txt:5) */
+    /*
+     * TODO:
+     *   - man(1) pages
+     *   - Jump to line and col (file:line:col)
+     *   - Compiler errors (path:line:col:*)
+     */
 
-    /* FIXME: In ST, the commands are launched from the CALLER of ST (dwm,
-     * another term, etc.), so the changes are not reflected in the current ST.
-     * This is an issue with the ST patch, and probably can't be fixed.
-     * This is needed for commands like "vim" or "man" */
+    /*
+     * FIXME: Launch commands like "vim" and "man" inside the same shell as ST,
+     * instead of the caller. This is a ST issue.
+     */
 
-    /* NOTE: From here, test the regex of the arguments and launch the asociated
+    /*
+     * NOTE: From here, test the regex of the arguments and launch the asociated
      * program. The ones checked first obviously have more priority, so they
-     * should be the most specific ones. */
+     * should be the most specific ones.
+     *
+     * NOTE: Most macros use LAUNCH to simply run the command, but others use
+     * the ST_LAUNCH macro, which opens another st(1) instance
+     */
 
-    /* "http?://?.?" */
-    if (regex(argv[1], "^http.*:\\/\\/.+\\..+"))
+    /* URLs */
+    if (regex(argv[1], REGEX_URL))
         return LAUNCH(CMD_BROWSER, argv[1]);
 
-    /* "*.pdf" */
-    if (regex(argv[1], "^.+\\.pdf$"))
+    /* PDF files */
+    if (regex(argv[1], REGEX_PDF))
         return LAUNCH(CMD_PDF, argv[1]);
 
     /* Iterate file extensions that should be opened with an image viewer */
@@ -91,7 +101,7 @@ int main(int argc, char** argv) {
     /* Iterate file extensions that should be opened with a text editor */
     for (int i = 0; i < LENGTH(editor_patterns); i++)
         if (regex(argv[1], editor_patterns[i]))
-            return LAUNCH(CMD_EDITOR, CMD_EDITOR_ARGS, argv[1]);
+            return ST_LAUNCH(CMD_EDITOR, argv[1]);
 
 #ifdef DEBUG
     fprintf(stderr, "plumber: Invalid pattern:\n");

@@ -1,13 +1,20 @@
 
 /* Commands used for plumbing depending on the text type */
-#define CMD_BROWSER     "firefox"
-#define CMD_PDF         "firefox"
-#define CMD_EDITOR      "emacsclient"
-#define CMD_EDITOR_ARGS "-n"
-#define CMD_IMAGE       "feh"
-#define CMD_VIDEO       "mpv"
+#define CMD_BROWSER "firefox"
+#define CMD_PDF     "firefox"
+#define CMD_IMAGE   "feh"
+#define CMD_VIDEO   "mpv"
+
+/* These programs will be launched in another st instance. See ST_LAUNCH() */
+#define CMD_EDITOR "nvim"
+
+/*----------------------------------------------------------------------------*/
+/* Regex patterns */
 
 #define REGEX_EXTENSION(STR) "^.+\\." STR "$"
+
+#define REGEX_URL "^http.*:\\/\\/.+\\..+"
+#define REGEX_PDF REGEX_EXTENSION("pdf")
 
 /* Regex patterns of filenames used with CMD_EDITOR */
 const char* editor_patterns[] = {
@@ -19,6 +26,7 @@ const char* editor_patterns[] = {
     REGEX_EXTENSION("txt"),  /**/
     REGEX_EXTENSION("mk"),   /**/
     REGEX_EXTENSION("md"),   /**/
+    REGEX_EXTENSION("org"),  /**/
     REGEX_EXTENSION("diff"), /**/
 };
 
