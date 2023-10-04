@@ -60,13 +60,6 @@ int main(int argc, char** argv) {
     }
 
     /*
-     * TODO:
-     *   - man(1) pages
-     *   - Jump to line and col (file:line:col)
-     *   - Compiler errors (path:line:col:*)
-     */
-
-    /*
      * FIXME: Launch commands like "vim" and "man" inside the same shell as ST,
      * instead of the caller. This is a ST issue.
      */
@@ -87,6 +80,14 @@ int main(int argc, char** argv) {
     /* PDF files */
     if (regex(argv[1], REGEX_PDF))
         return LAUNCH(CMD_PDF, argv[1]);
+
+    /* Man pages */
+    if (regex(argv[1], REGEX_MAN))
+        return ST_LAUNCH(CMD_MAN, argv[1]);
+
+    /* TODO: Filenames with line and col number (compiler errors, etc) */
+
+    /* TODO: Filenames with just line number */
 
     /* Iterate file extensions that should be opened with an image viewer */
     for (int i = 0; i < LENGTH(image_patterns); i++)
