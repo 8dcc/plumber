@@ -19,7 +19,7 @@ clean:
 	rm -f $(OBJS)
 	rm -f $(BIN)
 
-install:
+install: $(BIN)
 	mkdir -p $(INSTALL_DIR)
 	install -m 755 ./$(BIN) $(INSTALL_DIR)/$(BIN)
 
