@@ -7,6 +7,12 @@
 
 #include "settings.h"
 
+/* Used to get the compile-time length of arrays */
+#define LENGTH(ARR) (int)(sizeof(ARR) / sizeof((ARR)[0]))
+
+/* Used to execute commands */
+#define LAUNCH(CMD, ...) execlp(CMD, CMD, __VA_ARGS__, NULL)
+
 /* Used for the output of "--help" */
 #define HELP_LINE(STR, DESC, ...) \
     fprintf(stderr, "    %s " STR "\t- " DESC "\n", argv[0], __VA_ARGS__)
@@ -44,11 +50,20 @@ int main(int argc, char** argv) {
         return 0;
 
     if (argc == 2 && !strcmp(argv[1], "--help")) {
-        fprintf(stderr, "Usage:\n");
+        fprintf(stderr, "Plumber usage:\n");
         HELP_LINE("<URL>", "Open in browser (%s)", CMD_BROWSER);
         HELP_LINE("<PDF>", "Open in PDF viewer (%s)", CMD_PDF);
         return 0;
     }
+
+    /* NOTE: From here, test the regex of the arguments and launch the asociated
+     * program. The ones checked first obviously have more priority, so they
+     * should be the most specific ones. */
+
+    /* TODO:
+     *  - man(1) pages
+     *  - compiler errors
+     *  - jump to line and col when launching editor (file.txt:5) */
 
     /* "http?://?.?" */
     if (regex(argv[1], "^http.*:\\/\\/.+\\..+"))
@@ -58,8 +73,17 @@ int main(int argc, char** argv) {
     if (regex(argv[1], "^.+\\.pdf$"))
         return LAUNCH(CMD_PDF, argv[1]);
 
+    /* FIXME: In ST, the commands are launched from the CALLER of ST (dwm,
+     * another term, etc.), so the changes are not reflected in the current ST.
+     * This is an issue with the ST patch */
+
+    /* Iterate file extensions that should be opened with a text editor */
+    for (int i = 0; i < LENGTH(editor_patterns); i++)
+        if (regex(argv[1], editor_patterns[i]))
+            return LAUNCH(CMD_EDITOR, argv[1]);
+
 #ifdef DEBUG
-    fprintf(stderr, "Invalid pattern passed to plumber:\n");
+    fprintf(stderr, "plumber: Invalid pattern:\n");
     for (int i = 1; i < argc; i++)
         fprintf(stderr, "[%d]: %s\n", i, argv[i]);
 #endif
