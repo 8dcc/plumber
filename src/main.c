@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <regex.h>
 
-#include "settings.h"
+#include "config.h"
 
 /* Used to get the compile-time length of arrays */
 #define LENGTH(ARR) (int)(sizeof(ARR) / sizeof((ARR)[0]))
