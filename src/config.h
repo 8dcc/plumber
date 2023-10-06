@@ -16,9 +16,9 @@
 
 #define REGEX_URL     "^http.*:\\/\\/.+\\..+"
 #define REGEX_PDF     REGEX_EXTENSION("pdf")
-#define REGEX_MAN     "^[a-zA-Z0-9]+\\([0-9]\\)$"
-#define REGEX_LINENO  "^.+:[0-9]+$"          /* TODO */
-#define REGEX_LINECOL "^.+:[0-9]+:[0-9]+:.*" /* TODO */
+#define REGEX_MAN     "^[a-zA-Z0-9_-]+\\([0-9]\\)$"
+#define REGEX_LINENO  "^.+:[0-9]+$"
+#define REGEX_LINECOL "^.+:[0-9]+:[0-9]+.*"
 
 /* Regex patterns of filenames used with CMD_EDITOR */
 const char* editor_patterns[] = {

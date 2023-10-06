@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <regex.h>
 
@@ -18,7 +19,7 @@
 
 /* Used for the output of "--help" */
 #define HELP_LINE(STR, DESC, ...) \
-    fprintf(stderr, "    %s " STR "\t- " DESC "\n", argv[0], __VA_ARGS__)
+    fprintf(stderr, "    %s %-20s - " DESC "\n", argv[0], STR, __VA_ARGS__)
 
 /* Returns true if string `str` mathes regex pattern `pat`. Pattern uses BRE
  * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
@@ -47,6 +48,42 @@ static bool regex(const char* str, const char* pat) {
     return code == REG_NOERROR;
 }
 
+/* Convert "file:line:col" to vim argument format: "+call cursor(line,col)" */
+static char* line_to_vim(char* str) {
+    static char ret[] = "+call cursor(999999,999999)";
+    char* pLine       = &ret[13];
+
+    /* Skip "file:" */
+    while (*str != ':')
+        str++;
+
+    /* End filename string where the ':' start */
+    *str++ = '\0';
+
+    /* Save "line" part */
+    while (isdigit(*str))
+        *pLine++ = *str++;
+
+    /* If there is no colon after line, there is no column. Just use 0 */
+    if (*str != ':') {
+        strcpy(pLine, ",0)");
+        return ret;
+    }
+
+    *pLine++ = ',';
+    str++;
+
+    /* Save "col" part */
+    while (isdigit(*str))
+        *pLine++ = *str++;
+
+    /* Close string */
+    *pLine++ = ')';
+    *pLine++ = '\0';
+
+    return ret;
+}
+
 int main(int argc, char** argv) {
     /* Too few arguments. Just ignore. */
     if (argc <= 1)
@@ -54,8 +91,13 @@ int main(int argc, char** argv) {
 
     if (argc == 2 && !strcmp(argv[1], "--help")) {
         fprintf(stderr, "Plumber usage:\n");
-        HELP_LINE("<URL>", "Open in browser (%s)", CMD_BROWSER);
-        HELP_LINE("<PDF>", "Open in PDF viewer (%s)", CMD_PDF);
+        HELP_LINE("https://example.com", "Open in browser (%s)", CMD_BROWSER);
+        HELP_LINE("file.pdf", "Open in PDF viewer (%s)", CMD_PDF);
+        HELP_LINE("cmd(1)", "Open man page (%s)", CMD_MAN);
+        HELP_LINE("image.png", "Open in image viewer (%s)", CMD_IMAGE);
+        HELP_LINE("video.mkv", "Open in video player (%s)", CMD_VIDEO);
+        HELP_LINE("file.txt", "Open in text editor (%s)", CMD_EDITOR);
+        HELP_LINE("source.c:13:5", "Open at line and column (%s)", CMD_EDITOR);
         return 0;
     }
 
@@ -85,9 +127,12 @@ int main(int argc, char** argv) {
     if (regex(argv[1], REGEX_MAN))
         return ST_LAUNCH(CMD_MAN, argv[1]);
 
-    /* TODO: Filenames with line and col number (compiler errors, etc) */
-
-    /* TODO: Filenames with just line number */
+    /* Filenames with line and col number (compiler errors, etc)
+     * Filenames with just line number: "file:line" and "file:line:col*" */
+    if (regex(argv[1], REGEX_LINECOL) || regex(argv[1], REGEX_LINENO)) {
+        char* line_arg = line_to_vim(argv[1]);
+        return ST_LAUNCH(CMD_EDITOR, argv[1], line_arg);
+    }
 
     /* Iterate file extensions that should be opened with an image viewer */
     for (int i = 0; i < LENGTH(image_patterns); i++)
