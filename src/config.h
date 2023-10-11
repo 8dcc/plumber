@@ -1,3 +1,4 @@
+/* clang-format off */
 
 /* Commands used for plumbing depending on the text type */
 #define CMD_BROWSER "firefox"
@@ -22,29 +23,39 @@
 
 /* Regex patterns of filenames used with CMD_EDITOR */
 const char* editor_patterns[] = {
-    REGEX_EXTENSION("c"),    /**/
-    REGEX_EXTENSION("h"),    /**/
-    REGEX_EXTENSION("cpp"),  /**/
-    REGEX_EXTENSION("hpp"),  /**/
-    REGEX_EXTENSION("asm"),  /**/
-    REGEX_EXTENSION("txt"),  /**/
-    REGEX_EXTENSION("mk"),   /**/
-    REGEX_EXTENSION("md"),   /**/
-    REGEX_EXTENSION("org"),  /**/
-    REGEX_EXTENSION("diff"), /**/
+    REGEX_EXTENSION("c"),
+    REGEX_EXTENSION("h"),
+    REGEX_EXTENSION("cpp"),
+    REGEX_EXTENSION("hpp"),
+    REGEX_EXTENSION("asm"),
+    REGEX_EXTENSION("lisp"),
+    REGEX_EXTENSION("el"),
+    REGEX_EXTENSION("txt"),
+    REGEX_EXTENSION("md"),
+    REGEX_EXTENSION("org"),
+    REGEX_EXTENSION("diff"),
+    REGEX_EXTENSION("mk"),
+    "Makefile",
 };
 
 /* Regex patterns of filenames used with CMD_IMAGE */
 const char* image_patterns[] = {
-    REGEX_EXTENSION("png"),  /**/
-    REGEX_EXTENSION("jpg"),  /**/
-    REGEX_EXTENSION("jpeg"), /**/
-    REGEX_EXTENSION("gif"),  /**/
+    REGEX_EXTENSION("png"),
+    REGEX_EXTENSION("jpg"),
+    REGEX_EXTENSION("jpeg"),
+    REGEX_EXTENSION("gif"),
+    REGEX_EXTENSION("svg"),
+    REGEX_EXTENSION("bmp"),
+    REGEX_EXTENSION("ppm"),
+    REGEX_EXTENSION("pgm"),
+    REGEX_EXTENSION("pbm"),
 };
 
 /* Regex patterns of filenames used with CMD_VIDEO */
 const char* video_patterns[] = {
-    REGEX_EXTENSION("mp4"), /**/
-    REGEX_EXTENSION("mkv"), /**/
-    REGEX_EXTENSION("avi"), /**/
+    REGEX_EXTENSION("mp4"),
+    REGEX_EXTENSION("mkv"),
+    REGEX_EXTENSION("avi"),
+    REGEX_EXTENSION("mov"),
+    REGEX_EXTENSION("webm"),
 };
