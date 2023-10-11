@@ -14,6 +14,7 @@
 /* Regex patterns */
 
 #define REGEX_EXTENSION(STR) "^.+\\." STR "$"
+#define REGEX_FILENAME(STR)  "^" STR "$"
 
 #define REGEX_URL     "^http.*:\\/\\/.+\\..+"
 #define REGEX_PDF     REGEX_EXTENSION("pdf")
@@ -35,7 +36,7 @@ const char* editor_patterns[] = {
     REGEX_EXTENSION("org"),
     REGEX_EXTENSION("diff"),
     REGEX_EXTENSION("mk"),
-    "Makefile",
+    REGEX_FILENAME("Makefile"),
 };
 
 /* Regex patterns of filenames used with CMD_IMAGE */
