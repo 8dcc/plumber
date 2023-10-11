@@ -28,8 +28,16 @@ $ sudo make install
 #+end_src
 
 * Usage
+Note that the commands on the right are the default ones but can be changed from
+[[https://github.com/8dcc/plumber/blob/main/src/config.h][src/config.h]]
 
 #+begin_src console
 $ plumber --help
-...
+    plumber https://example.com  - Open in browser (firefox)
+    plumber file.pdf             - Open in PDF viewer (firefox)
+    plumber cmd(1)               - Open man page (man)
+    plumber image.png            - Open in image viewer (feh)
+    plumber video.mkv            - Open in video player (mpv)
+    plumber file.txt             - Open in text editor (nvim)
+    plumber source.c:13:5        - Open at line and column (nvim)
 #+end_src
