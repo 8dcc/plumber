@@ -48,7 +48,8 @@ static bool regex(const char* str, const char* pat) {
     return code == REG_NOERROR;
 }
 
-/* Convert "file:line:col" to vim argument format: "+call cursor(line,col)" */
+/* Convert "file:line:col" (or just "file:line") to vim argument format:
+ * "+call cursor(line,col)" */
 static char* line_to_vim(char* str) {
     static char ret[] = "+call cursor(999999,999999)";
     char* pLine       = &ret[13];
@@ -72,6 +73,12 @@ static char* line_to_vim(char* str) {
 
     *pLine++ = ',';
     str++;
+
+    /* No digit after the line number (e.g. regex outputs) */
+    if (!isdigit(*str)) {
+        strcpy(pLine, "0)");
+        return ret;
+    }
 
     /* Save "col" part */
     while (isdigit(*str))
@@ -127,9 +134,9 @@ int main(int argc, char** argv) {
     if (regex(argv[1], REGEX_MAN))
         return ST_LAUNCH(CMD_MAN, argv[1]);
 
-    /* Filenames with line and col number (compiler errors, etc)
-     * Filenames with just line number: "file:line" and "file:line:col*" */
-    if (regex(argv[1], REGEX_LINECOL) || regex(argv[1], REGEX_LINENO)) {
+    /* Filenames with line and col number (e.g. compiler errors)
+     * Filenames with just line number (e.g. grep output) */
+    if (regex(argv[1], REGEX_LINECOL)) {
         char* line_arg = line_to_vim(argv[1]);
         return ST_LAUNCH(CMD_EDITOR, argv[1], line_arg);
     }
