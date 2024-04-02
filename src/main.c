@@ -21,7 +21,7 @@
 #define HELP_LINE(STR, DESC, ...) \
     fprintf(stderr, "    %s %-20s - " DESC "\n", argv[0], STR, __VA_ARGS__)
 
-/* Returns true if string `str` mathes regex pattern `pat`. Pattern uses BRE
+/* Returns true if string `str' mathes regex pattern `pat'. Pattern uses ERE
  * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
 static bool regex(const char* str, const char* pat) {
     static regex_t r;
