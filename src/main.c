@@ -66,7 +66,7 @@ static char* line_to_vim(char* str) {
         *pLine++ = *str++;
 
     /* If there is no colon after line, there is no column. Just use 0 */
-    if (*str != ':') {
+    if (*str != ':' || !isdigit(str[1])) {
         strcpy(pLine, ",0)");
         return ret;
     }
