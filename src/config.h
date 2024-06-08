@@ -13,6 +13,11 @@
 /*----------------------------------------------------------------------------*/
 /* Regex patterns */
 
+/* These will be trimmed from the start and end of the input */
+#define REGEX_QUOTE       "(\'|\")"
+#define REGEX_QUOTE_START "^\\s*" REGEX_QUOTE
+#define REGEX_QUOTE_END   REGEX_QUOTE "\\s*$"
+
 #define REGEX_EXTENSION(STR) "^.+\\." STR "$"
 #define REGEX_FILENAME(STR)  "^" STR "$"
 

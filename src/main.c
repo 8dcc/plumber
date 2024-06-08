@@ -8,6 +8,8 @@
 
 #include "config.h"
 
+#define MAX_REGEX_GROUPS 10
+
 /* Used to get the compile-time length of arrays */
 #define LENGTH(ARR) (int)(sizeof(ARR) / sizeof((ARR)[0]))
 
@@ -20,6 +22,9 @@
 /* Used for the output of "--help" */
 #define HELP_LINE(STR, DESC, ...) \
     fprintf(stderr, "    %s %-20s - " DESC "\n", argv[0], STR, __VA_ARGS__)
+
+/*----------------------------------------------------------------------------*/
+/* Regex functions */
 
 /* Returns true if string `str' mathes regex pattern `pat'. Pattern uses ERE
  * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
@@ -47,6 +52,57 @@ static bool regex(const char* str, const char* pat) {
      * REG_NOMATCH: Pattern did not match */
     return code == REG_NOERROR;
 }
+
+/* Try to find parenthesized `group' of `pat' in `str'. Write the `start' and
+ * `end' of the group match, and return true on success.
+ * If the group number is negative, it's relative to the last match (-1 means
+ * last matched group). */
+static bool regex_find(const char* str, const char* pat, int group, int* start,
+                       int* end) {
+    static regex_t r;
+    static regmatch_t pmatch[MAX_REGEX_GROUPS];
+
+    /* Compile regex pattern ignoring case */
+    if (regcomp(&r, pat, REG_EXTENDED | REG_ICASE)) {
+        fprintf(stderr,
+                "plumber: regex_find: regcomp returned an error code for "
+                "pattern "
+                "\"%s\"\n",
+                pat);
+        return false;
+    }
+
+    /* Real number of groups, calculated by regcomp(). We add one because the
+     * first element of `pmatch' is the global match. */
+    const int nmatch = r.re_nsub + 1;
+    if (nmatch > MAX_REGEX_GROUPS) {
+        fprintf(stderr,
+                "plumber: regex_find: regular expression exceeds the number of "
+                "parenthesized groups (%d)\n",
+                MAX_REGEX_GROUPS);
+        return false;
+    }
+
+    int code = regexec(&r, str, nmatch, pmatch, 0);
+    if (code > REG_NOMATCH) {
+        char err[100];
+        regerror(code, &r, err, sizeof(err));
+        fprintf(stderr, "plumber: regex_find: regexec returned an error: %s\n",
+                err);
+        return false;
+    }
+
+    /* If the group number is negative, it's relative to the last match */
+    if (group < 0)
+        group += nmatch;
+
+    *start = pmatch[group].rm_so;
+    *end   = pmatch[group].rm_eo;
+    return code == REG_NOERROR && *start >= 0 && *end >= 0;
+}
+
+/*----------------------------------------------------------------------------*/
+/* String manipulation functions */
 
 /* Convert "file:line:col" (or just "file:line") to vim argument format:
  * "+call cursor(line,col)" */
@@ -91,6 +147,30 @@ static char* line_to_vim(char* str) {
     return ret;
 }
 
+/* Remove spaces, single quotes and double quotes of start and end string
+ * in-place. Return `str'. */
+static char* trim_quotes(char* str) {
+    /* Find the real start of the string */
+    int prefix_start, prefix_end;
+    if (regex_find(str, REGEX_QUOTE_START, 1, &prefix_start, &prefix_end)) {
+        /* Shift string `prefix_end' characters */
+        for (int i = 0; str[i] != '\0'; i++)
+            str[i] = str[i + prefix_end];
+    }
+
+    /* Find the real end of the string */
+    int subfix_start, subfix_end;
+    if (regex_find(str, REGEX_QUOTE_END, -1, &subfix_start, &subfix_end)) {
+        /* End string at `subfix_start' */
+        str[subfix_start] = '\0';
+    }
+
+    return str;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Main function */
+
 int main(int argc, char** argv) {
     /* Too few arguments. Just ignore. */
     if (argc <= 1)
@@ -107,6 +187,10 @@ int main(int argc, char** argv) {
         HELP_LINE("source.c:13:5", "Open at line and column (%s)", CMD_EDITOR);
         return 0;
     }
+
+    /* If the argument contains quotes in the start or end of the string, trim
+     * them in-place. */
+    trim_quotes(argv[1]);
 
     /*
      * FIXME: Launch commands like "vim" and "man" inside the same shell as ST,
