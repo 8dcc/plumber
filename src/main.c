@@ -23,6 +23,13 @@
 #define HELP_LINE(STR, DESC, ...) \
     fprintf(stderr, "    %s %-20s - " DESC "\n", argv[0], STR, __VA_ARGS__)
 
+#define ERR(...)                                    \
+    do {                                            \
+        fprintf(stderr, "plumber: %s: ", __func__); \
+        fprintf(stderr, __VA_ARGS__);               \
+        fputc('\n', stderr);                        \
+    } while (0)
+
 /*----------------------------------------------------------------------------*/
 /* Regex functions */
 
@@ -33,10 +40,7 @@ static bool regex(const char* str, const char* pat) {
 
     /* Compile regex pattern ignoring case */
     if (regcomp(&r, pat, REG_EXTENDED | REG_ICASE)) {
-        fprintf(stderr,
-                "plumber: regex: regcomp returned an error code for pattern "
-                "\"%s\"\n",
-                pat);
+        ERR("regcomp returned an error code for pattern \"%s\"", pat);
         return false;
     }
 
@@ -44,7 +48,7 @@ static bool regex(const char* str, const char* pat) {
     if (code > REG_NOMATCH) {
         char err[100];
         regerror(code, &r, err, sizeof(err));
-        fprintf(stderr, "plumber: regex: regexec returned an error: %s\n", err);
+        ERR("regexec returned an error: %s", err);
         return false;
     }
 
@@ -64,11 +68,7 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
 
     /* Compile regex pattern ignoring case */
     if (regcomp(&r, pat, REG_EXTENDED | REG_ICASE)) {
-        fprintf(stderr,
-                "plumber: regex_find: regcomp returned an error code for "
-                "pattern "
-                "\"%s\"\n",
-                pat);
+        ERR("regcomp returned an error code for pattern \"%s\"", pat);
         return false;
     }
 
@@ -76,10 +76,9 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
      * first element of `pmatch' is the global match. */
     const int nmatch = r.re_nsub + 1;
     if (nmatch > MAX_REGEX_GROUPS) {
-        fprintf(stderr,
-                "plumber: regex_find: regular expression exceeds the number of "
-                "parenthesized groups (%d)\n",
-                MAX_REGEX_GROUPS);
+        ERR("regular expression exceeds the number of parenthesized groups "
+            "(%d/%d)",
+            nmatch, MAX_REGEX_GROUPS);
         return false;
     }
 
@@ -87,8 +86,7 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
     if (code > REG_NOMATCH) {
         char err[100];
         regerror(code, &r, err, sizeof(err));
-        fprintf(stderr, "plumber: regex_find: regexec returned an error: %s\n",
-                err);
+        ERR("regexec returned an error: %s", err);
         return false;
     }
 
