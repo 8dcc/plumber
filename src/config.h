@@ -19,7 +19,7 @@
 #define REGEX_QUOTE_END   REGEX_QUOTE "\\s*$"
 
 #define REGEX_EXTENSION(STR) "^.+\\." STR "$"
-#define REGEX_FILENAME(STR)  "^" STR "$"
+#define REGEX_FILENAME(STR)  "^(.*\\/)?" STR "$"
 
 #define REGEX_URL     "^http.*:\\/\\/.+\\..+"
 #define REGEX_PDF     REGEX_EXTENSION("pdf")
