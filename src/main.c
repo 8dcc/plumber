@@ -33,8 +33,12 @@
 /*----------------------------------------------------------------------------*/
 /* Regex functions */
 
-/* Returns true if string `str' mathes regex pattern `pat'. Pattern uses ERE
- * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
+/*
+ * Returns true if string `str' mathes regex pattern `pat'.
+ *
+ * Pattern uses ERE syntax:
+ * https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html
+ */
 static bool regex(const char* str, const char* pat) {
     static regex_t r;
 
@@ -44,7 +48,9 @@ static bool regex(const char* str, const char* pat) {
         return false;
     }
 
-    int code = regexec(&r, str, 0, NULL, 0);
+    const int code = regexec(&r, str, 0, NULL, 0);
+    regfree(&r);
+
     if (code > REG_NOMATCH) {
         char err[100];
         regerror(code, &r, err, sizeof(err));
@@ -57,10 +63,13 @@ static bool regex(const char* str, const char* pat) {
     return code == REG_NOERROR;
 }
 
-/* Try to find parenthesized `group' of `pat' in `str'. Write the `start' and
+/*
+ * Try to find parenthesized `group' of `pat' in `str'. Write the `start' and
  * `end' of the group match, and return true on success.
+ *
  * If the group number is negative, it's relative to the last match (-1 means
- * last matched group). */
+ * last matched group).
+ */
 static bool regex_find(const char* str, const char* pat, int group, int* start,
                        int* end) {
     static regex_t r;
@@ -79,10 +88,13 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
         ERR("regular expression exceeds the number of parenthesized groups "
             "(%d/%d)",
             nmatch, MAX_REGEX_GROUPS);
+        regfree(&r);
         return false;
     }
 
-    int code = regexec(&r, str, nmatch, pmatch, 0);
+    const int code = regexec(&r, str, nmatch, pmatch, 0);
+    regfree(&r);
+
     if (code > REG_NOMATCH) {
         char err[100];
         regerror(code, &r, err, sizeof(err));
@@ -102,9 +114,13 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
 /*----------------------------------------------------------------------------*/
 /* String manipulation functions */
 
-/* Convert "file:line:col" (or just "file:line") to vim argument format:
- * "+call cursor(line,col)" */
-static char* line_to_vim(char* str) {
+/*
+ * Convert "file:line:col" (or just "file:line") to vim argument format:
+ * "+call cursor(line,col)"
+ *
+ * Returns a static string that should not be freed by the caller.
+ */
+static const char* line_to_vim(char* str) {
     static char ret[] = "+call cursor(999999,999999)";
     char* pLine       = &ret[13];
 
@@ -145,8 +161,10 @@ static char* line_to_vim(char* str) {
     return ret;
 }
 
-/* Remove spaces, single quotes and double quotes of start and end string
- * in-place. Return `str'. */
+/*
+ * Remove spaces, single quotes and double quotes of start and end string
+ * in-place. Return `str'.
+ */
 static char* trim_quotes(char* str) {
     /* Find the real start of the string */
     int prefix_start, prefix_end;
@@ -193,9 +211,7 @@ int main(int argc, char** argv) {
     /*
      * FIXME: Launch commands like "vim" and "man" inside the same shell as ST,
      * instead of the caller. This is a ST issue.
-     */
-
-    /*
+     *
      * NOTE: From here, test the regex of the arguments and launch the asociated
      * program. The ones checked first obviously have more priority, so they
      * should be the most specific ones.
@@ -219,7 +235,7 @@ int main(int argc, char** argv) {
     /* Filenames with line and col number (e.g. compiler errors)
      * Filenames with just line number (e.g. grep output) */
     if (regex(argv[1], REGEX_LINECOL)) {
-        char* line_arg = line_to_vim(argv[1]);
+        const char* line_arg = line_to_vim(argv[1]);
         return ST_LAUNCH(CMD_EDITOR, argv[1], line_arg);
     }
 
