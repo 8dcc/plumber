@@ -21,7 +21,7 @@
 #define REGEX_EXTENSION(STR) "^.+\\." STR "$"
 #define REGEX_FILENAME(STR)  "^(.*/)?" STR "$"
 
-#define REGEX_URL     "^http.*://.+\\..+"
+#define REGEX_URL     "^https?://.+"
 #define REGEX_PDF     REGEX_EXTENSION("pdf")
 #define REGEX_MAN     "^[a-zA-Z0-9_-]+\\([0-9]\\)$"
 #define REGEX_LINECOL "^.+:[0-9]+.*"
