@@ -1,15 +1,12 @@
-#+title: Plumber
-#+options: toc:nil
-#+startup: showeverything
-#+author: 8dcc
+#+TITLE: Plumber
+#+AUTHOR: 8dcc
+#+OPTIONS: toc:2
+#+STARTUP: showeverything
 
-*Pass messages between applications. Designed to use with [[https://github.com/8dcc/linux-dotfiles][my build of ST]].*
+*Run different commands depending on the text format.*
 
-#+TOC: headlines 2
-
-* Description
-This program is inspired by the [[https://st.suckless.org/patches/right_click_to_plumb/][right click to plumb]] patch for the
-[[https://st.suckless.org/][Simple Terminal]].
+This program is inspired by the [[https://st.suckless.org/patches/right_click_to_plumb/][right click to plumb]] patch for the [[https://st.suckless.org/][Simple
+Terminal]], and was originally designed to be used with [[https://github.com/8dcc/linux-dotfiles][my build of ST]].
 
 I started using the patch with [[https://surf.suckless.org/][surf]] (lighweight suckless browser) as my plumb
 command, but after looking at the [[https://9p.io/wiki/plan9/using_plumbing/index.html][Plan9 plumbing page]], I decided to make my own
@@ -17,19 +14,26 @@ personal version.
 
 * Building
 
+To build the program, simply run =make=.
+
 #+begin_src console
 $ git clone https://github.com/8dcc/plumber
 $ cd plumber
 $ make
 ...
+#+end_src
 
+You can also install it with the =install= target.
+
+#+begin_src console
 $ sudo make install
 ...
 #+end_src
 
 * Usage
+
 Note that the commands on the right are the default ones but can be changed from
-[[https://github.com/8dcc/plumber/blob/main/src/config.h][src/config.h]]
+[[https://github.com/8dcc/plumber/blob/main/src/config.h][src/config.h]].
 
 #+begin_src console
 $ plumber --help
