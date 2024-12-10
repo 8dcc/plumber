@@ -23,12 +23,21 @@
 #define HELP_LINE(STR, DESC, ...)                                              \
     fprintf(stderr, "    %s %-20s - " DESC "\n", argv[0], STR, __VA_ARGS__)
 
+#ifdef DEBUG
 #define ERR(...)                                                               \
     do {                                                                       \
         fprintf(stderr, "plumber: %s: ", __func__);                            \
         fprintf(stderr, __VA_ARGS__);                                          \
         fputc('\n', stderr);                                                   \
     } while (0)
+#else
+#define ERR(...)                                                               \
+    do {                                                                       \
+        fprintf(stderr, "plumber: ");                                          \
+        fprintf(stderr, __VA_ARGS__);                                          \
+        fputc('\n', stderr);                                                   \
+    } while (0)
+#endif
 
 /*----------------------------------------------------------------------------*/
 /* Enums */
@@ -42,6 +51,11 @@ enum EExitCodes {
 
 /*----------------------------------------------------------------------------*/
 /* Regex functions */
+
+/*
+ * TODO: Move regex functions (and 'MAX_REGEX_GROUPS' macro) to different source
+ * file.
+ */
 
 /*
  * Returns true if string `str' mathes regex pattern `pat'.
@@ -85,9 +99,13 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
     static regex_t r;
     static regmatch_t pmatch[MAX_REGEX_GROUPS];
 
+    /*
+     * FIXME: Display regex errors with regerror(3).
+     */
+
     /* Compile regex pattern ignoring case */
     if (regcomp(&r, pat, REG_EXTENDED | REG_ICASE)) {
-        ERR("regcomp returned an error code for pattern \"%s\"", pat);
+        ERR("Could not compile pattern '%s'", pat);
         return false;
     }
 
@@ -97,7 +115,7 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
      */
     const int nmatch = r.re_nsub + 1;
     if (nmatch > MAX_REGEX_GROUPS) {
-        ERR("regular expression exceeds the number of parenthesized groups "
+        ERR("Regular expression exceeds the number of parenthesized groups "
             "(%d/%d)",
             nmatch,
             MAX_REGEX_GROUPS);
@@ -273,9 +291,9 @@ int main(int argc, char** argv) {
             return ST_LAUNCH(CMD_EDITOR, argv[1]);
 
 #ifdef DEBUG
-    fprintf(stderr, "plumber: Invalid pattern:\n");
+    ERR("Invalid pattern. Dumping arguments...");
     for (int i = 1; i < argc; i++)
-        fprintf(stderr, "[%d]: %s\n", i, argv[i]);
+        fprintf(stderr, "[%d] '%s'\n", i, argv[i]);
 #endif
 
     return EXITFAILURE;
