@@ -3,7 +3,7 @@
 /* Commands used for plumbing depending on the text type */
 #define CMD_BROWSER "firefox"
 #define CMD_PDF     "firefox"
-#define CMD_IMAGE   "feh"
+#define CMD_IMAGE   "nsxiv"
 #define CMD_VIDEO   "mpv"
 
 /* These programs will be launched in another st instance. See ST_LAUNCH() */
