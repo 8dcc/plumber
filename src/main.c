@@ -31,6 +31,16 @@
     } while (0)
 
 /*----------------------------------------------------------------------------*/
+/* Enums */
+
+enum EExitCodes {
+    EXITSUCCESS     = 0,
+    EXITFAILURE     = 1, /* Command-line argument didn't match any regexp */
+    EXITINVALIDARGS = 2, /* Command-line arguments were invalid */
+    EXITHELP        = 3, /* The only command-line argument was '--help' */
+};
+
+/*----------------------------------------------------------------------------*/
 /* Regex functions */
 
 /*
@@ -193,7 +203,7 @@ static char* trim_quotes(char* str) {
 int main(int argc, char** argv) {
     /* Too few arguments. Just ignore. */
     if (argc <= 1)
-        return 0;
+        return EXITINVALIDARGS;
 
     if (argc == 2 && !strcmp(argv[1], "--help")) {
         fprintf(stderr,
@@ -207,7 +217,7 @@ int main(int argc, char** argv) {
         HELP_LINE("video.mkv", "Open in video player (%s)", CMD_VIDEO);
         HELP_LINE("file.txt", "Open in text editor (%s)", CMD_EDITOR);
         HELP_LINE("source.c:13:5", "Open at line and column (%s)", CMD_EDITOR);
-        return 0;
+        return EXITHELP;
     }
 
     /*
@@ -268,5 +278,5 @@ int main(int argc, char** argv) {
         fprintf(stderr, "[%d]: %s\n", i, argv[i]);
 #endif
 
-    return 0;
+    return EXITFAILURE;
 }
