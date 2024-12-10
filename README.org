@@ -37,10 +37,12 @@ Note that the commands on the right are the default ones but can be changed from
 
 #+begin_src console
 $ plumber --help
+Usage: plumber [REGEXP]
+Examples:
     plumber https://example.com  - Open in browser (firefox)
     plumber file.pdf             - Open in PDF viewer (firefox)
     plumber cmd(1)               - Open man page (man)
-    plumber image.png            - Open in image viewer (feh)
+    plumber image.png            - Open in image viewer (nsxiv)
     plumber video.mkv            - Open in video player (mpv)
     plumber file.txt             - Open in text editor (nvim)
     plumber source.c:13:5        - Open at line and column (nvim)

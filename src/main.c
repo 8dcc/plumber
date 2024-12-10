@@ -21,7 +21,7 @@
 
 /* Used for the output of "--help" */
 #define HELP_LINE(STR, DESC, ...)                                              \
-    fprintf(stderr, "    %s %-20s -  " DESC "\n", argv[0], STR, __VA_ARGS__)
+    fprintf(stderr, "    %s %-20s - " DESC "\n", argv[0], STR, __VA_ARGS__)
 
 #define ERR(...)                                                               \
     do {                                                                       \
@@ -196,7 +196,10 @@ int main(int argc, char** argv) {
         return 0;
 
     if (argc == 2 && !strcmp(argv[1], "--help")) {
-        fprintf(stderr, "Plumber usage:\n");
+        fprintf(stderr,
+                "Usage: %s [REGEXP]\n"
+                "Examples:\n",
+                argv[0]);
         HELP_LINE("https://example.com", "Open in browser (%s)", CMD_BROWSER);
         HELP_LINE("file.pdf", "Open in PDF viewer (%s)", CMD_PDF);
         HELP_LINE("cmd(1)", "Open man page (%s)", CMD_MAN);
