@@ -20,14 +20,14 @@
 #define ST_LAUNCH(...) execlp("st", "st", "-e", __VA_ARGS__, NULL)
 
 /* Used for the output of "--help" */
-#define HELP_LINE(STR, DESC, ...) \
-    fprintf(stderr, "    %s %-20s - " DESC "\n", argv[0], STR, __VA_ARGS__)
+#define HELP_LINE(STR, DESC, ...)                                              \
+    fprintf(stderr, "    %s %-20s -  " DESC "\n", argv[0], STR, __VA_ARGS__)
 
-#define ERR(...)                                    \
-    do {                                            \
-        fprintf(stderr, "plumber: %s: ", __func__); \
-        fprintf(stderr, __VA_ARGS__);               \
-        fputc('\n', stderr);                        \
+#define ERR(...)                                                               \
+    do {                                                                       \
+        fprintf(stderr, "plumber: %s: ", __func__);                            \
+        fprintf(stderr, __VA_ARGS__);                                          \
+        fputc('\n', stderr);                                                   \
     } while (0)
 
 /*----------------------------------------------------------------------------*/
@@ -81,13 +81,16 @@ static bool regex_find(const char* str, const char* pat, int group, int* start,
         return false;
     }
 
-    /* Real number of groups, calculated by regcomp(). We add one because the
-     * first element of `pmatch' is the global match. */
+    /*
+     * Real number of groups, calculated by regcomp(). We add one because the
+     * first element of `pmatch' is the global match.
+     */
     const int nmatch = r.re_nsub + 1;
     if (nmatch > MAX_REGEX_GROUPS) {
         ERR("regular expression exceeds the number of parenthesized groups "
             "(%d/%d)",
-            nmatch, MAX_REGEX_GROUPS);
+            nmatch,
+            MAX_REGEX_GROUPS);
         regfree(&r);
         return false;
     }
@@ -204,8 +207,10 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    /* If the argument contains quotes in the start or end of the string, trim
-     * them in-place. */
+    /*
+     * If the argument contains quotes in the start or end of the string, trim
+     * them in-place.
+     */
     trim_quotes(argv[1]);
 
     /*
