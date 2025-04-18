@@ -1,9 +1,6 @@
-# Misc
+# Main binaries
 plumber
-
-# Doxygen documentation
-/doc/html/
-/doc/latex/
+plumber-test
 
 # Prerequisites
 *.d
