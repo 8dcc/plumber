@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
 LDLIBS=
 
-SRC=main.c
+SRC=main.c pattern.c transform.c
 OBJ=$(addprefix obj/, $(addsuffix .o, $(SRC)))
 
 BIN=plumber
