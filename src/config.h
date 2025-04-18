@@ -35,10 +35,13 @@ const char* editor_patterns[] = {
     REGEX_EXTENSION("asm"),
     REGEX_EXTENSION("lisp"),
     REGEX_EXTENSION("el"),
+    REGEX_EXTENSION("sh"),
     REGEX_EXTENSION("txt"),
+    REGEX_EXTENSION("log"),
     REGEX_EXTENSION("md"),
     REGEX_EXTENSION("org"),
     REGEX_EXTENSION("diff"),
+    REGEX_EXTENSION("patch"),
     REGEX_EXTENSION("mk"),
     REGEX_FILENAME("Makefile"),
 };
